@@ -1,0 +1,78 @@
+rule Trojan_Win32_WebClipPaste_B_2147977448_0
+{
+    meta:
+        author = "defender2yara"
+        detection_name = "Trojan:Win32/WebClipPaste.B"
+        threat_id = "2147977448"
+        type = "Trojan"
+        platform = "Win32: Windows 32-bit platform"
+        family = "WebClipPaste"
+        severity = "Critical"
+        signature_type = "SIGNATURE_TYPE_CMDHSTR_EXT"
+        threshold = "110"
+        strings_accuracy = "Low"
+    strings:
+        $x_100_1 = "powershell" wide //weight: 100
+        $x_100_2 = "pwsh" wide //weight: 100
+        $x_100_3 = "cmd" wide //weight: 100
+        $x_10_4 = "iex(" wide //weight: 10
+        $x_10_5 = "iex " wide //weight: 10
+        $x_10_6 = "invoke-expression" wide //weight: 10
+        $x_10_7 = "irm " wide //weight: 10
+        $x_10_8 = "iwr " wide //weight: 10
+        $x_10_9 = "invoke-webrequest" wide //weight: 10
+        $x_10_10 = "invoke-restmethod" wide //weight: 10
+        $x_10_11 = "downloadstring" wide //weight: 10
+        $x_10_12 = "downloadfile" wide //weight: 10
+        $x_10_13 = "downloaddata" wide //weight: 10
+        $x_10_14 = "webclient" wide //weight: 10
+        $x_10_15 = "frombase64string" wide //weight: 10
+        $x_10_16 = "-encodedcommand" wide //weight: 10
+        $x_10_17 = "-enc " wide //weight: 10
+        $x_10_18 = "-nop" wide //weight: 10
+        $x_10_19 = "-noprofile" wide //weight: 10
+        $x_10_20 = "-w hidden" wide //weight: 10
+        $x_10_21 = "-windowstyle h" wide //weight: 10
+        $x_10_22 = "-ep bypass" wide //weight: 10
+        $x_10_23 = "-executionpolicy bypass" wide //weight: 10
+        $x_10_24 = "-usebasicparsing" wide //weight: 10
+        $x_10_25 = "curl " wide //weight: 10
+        $x_10_26 = "wget " wide //weight: 10
+        $x_10_27 = "certutil" wide //weight: 10
+        $x_10_28 = "bitsadmin" wide //weight: 10
+        $x_110_29 = "bitsadmin /transfer" wide //weight: 110
+        $x_10_30 = "start-bitstransfer" wide //weight: 10
+        $x_110_31 = "-urlcache" wide //weight: 110
+        $x_10_32 = "regsvr32" wide //weight: 10
+        $x_110_33 = "regsvr32 /i:http" wide //weight: 110
+        $x_110_34 = "regsvr32 /s /n /u /i:" wide //weight: 110
+        $x_10_35 = "rundll32" wide //weight: 10
+        $x_110_36 = "rundll32 javascript:" wide //weight: 110
+        $x_10_37 = "scrobj" wide //weight: 10
+        $x_110_38 = "mshta" wide //weight: 110
+        $x_110_39 = {6d 00 73 00 69 00 65 00 78 00 65 00 63 00 2e 00 65 00 78 00 65 00 [0-255] 68 00 74 00 74 00 70 00}  //weight: 110, accuracy: Low
+        $x_10_40 = "--headless" wide //weight: 10
+        $x_10_41 = "/v:on" wide //weight: 10
+        $x_10_42 = "for /f" wide //weight: 10
+        $x_10_43 = "delims=" wide //weight: 10
+        $x_10_44 = "invokescript" wide //weight: 10
+        $x_10_45 = "invokecommand" wide //weight: 10
+        $x_10_46 = "-w 1 " wide //weight: 10
+        $x_10_47 = "-w h " wide //weight: 10
+        $x_10_48 = "[scriptblock]::Create" wide //weight: 10
+        $x_10_49 = "[PowerShell]::Create()" wide //weight: 10
+        $x_110_50 = {66 00 6f 00 72 00 [0-255] 63 00 6f 00 70 00 79 00 [0-48] 25 00 74 00 65 00 6d 00 70 00 25 00 5c 00}  //weight: 110, accuracy: Low
+        $n_1000_51 = "/install" wide //weight: -1000
+        $n_1000_52 = "(get-wmiobject -class win32_operatingsystem).caption" wide //weight: -1000
+        $n_1000_53 = "windows defender advanced threat protection" wide //weight: -1000
+    condition:
+        (filesize < 20MB) and
+        (not (any of ($n*))) and
+        (
+            ((11 of ($x_10_*))) or
+            ((1 of ($x_100_*) and 1 of ($x_10_*))) or
+            ((2 of ($x_100_*))) or
+            ((1 of ($x_110_*))) or
+            (all of ($x*))
+        )
+}
